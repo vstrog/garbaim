@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOCKO - שירות משלוח גרביים שבועי</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#e04e48',
+                        secondary: '#f5a623',
+                        accent: '#4a90e2',
+                        dark: '#2d3748',
+                        light: '#f8f9fa'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #eef2f7 100%);
+            overflow-x: hidden;
+        }
+        
+        .sock-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e04e48' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .sock-card {
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .sock-card:hover {
+            transform: translateY(-10px) rotateY(5deg);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .sock-card img {
+            transition: all 0.3s ease;
+        }
+        
+        .sock-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .sock-icon {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .sock-icon::after {
+            content: "🧦";
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            font-size: 24px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .testimonial-card {
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cta-button {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .cta-button:hover::after {
+            left: 100%;
+        }
+        
+        .sock-line {
+            height: 4px;
+            background: linear-gradient(to right, #e04e48, #f5a623, #4a90e2);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="sock-pattern">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md py-4 px-6 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center">
+            <div class="text-2xl font-bold text-primary ml-2">
+                SOCKO <i class="fas fa-socks mr-2"></i>
+            </div>
+        </div>
+        <div class="hidden md:flex space-x-8">
+            <a href="#" class="text-dark hover:text-primary font-medium">דף הבית</a>
+            <a href="#features" class="text-dark hover:text-primary font-medium">תכונות</a>
+            <a href="#how-it-works" class="text-dark hover:text-primary font-medium">איך זה עובד</a>
+            <a href="#pricing" class="text-dark hover:text-primary font-medium">מחירון</a>
+            <a href="#testimonials" class="text-dark hover:text-primary font-medium">המלצות</a>
+        </div>
+        <div>
+            <button class="bg-primary text-white px-6 py-2 rounded-full font-medium hover:bg-opacity-90 transition">
+                התחל עכשיו
+            </button>
+        </div>
+        <div class="md:hidden">
+            <button id="menu-toggle" class="text-dark">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white py-4 px-6 shadow-lg">
+        <a href="#" class="block py-2 text-dark hover:text-primary">דף הבית</a>
+        <a href="#features" class="block py-2 text-dark hover:text-primary">תכונות</a>
+        <a href="#how-it-works" class="block py-2 text-dark hover:text-primary">איך זה עובד</a>
+        <a href="#pricing" class="block py-2 text-dark hover:text-primary">מחירון</a>
+        <a href="#testimonials" class="block py-2 text-dark hover:text-primary">המלצות</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="py-16 px-4 md:px-8">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div class="text-center md:text-right">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-dark mb-6">
+                    <span class="text-primary">גרביים טריים</span> משלוחים כל שבוע
+                </h1>
+                <p class="text-lg text-gray-600 mb-8 max-w-lg mx-auto md:mx-0">
+                    לעולם לא יסתיים לך זוג של גרביים נקיים ונוחים. הגרביים המובילים שלנו נשלחים ונמסרים טריים  כל שבוע.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-end">
+                    <button class="bg-primary text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-opacity-90 transition cta-button">
+                        התחל את המינוי שלך
+                    </button>
+                    <button class="border-2 border-dark text-dark px-8 py-4 rounded-full font-semibold text-lg hover:bg-dark hover:text-white transition">
+                        למד עוד
+                    </button>
+                </div>
+                <div class="mt-8 flex items-center justify-center md:justify-end">
+                    <p class="ml-4 text-gray-600">
+                        <span class="font-semibold">5,000+</span> לקוחות שמחים
+                    </p>
+                    <div class="flex -space-x-3">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Customer" class="w-10 h-10 rounded-full border-2 border-white">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Customer" class="w-10 h-10 rounded-full border-2 border-white">
+                        <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Customer" class="w-10 h-10 rounded-full border-2 border-white">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Customer" class="w-10 h-10 rounded-full border-2 border-white">
+                    </div>
+                </div>
+            </div>
+            <div class="relative">
+                <div class="relative z-10 flex justify-center">
+                    <div class="sock-card bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+                        <div class="flex justify-center mb-6">
+                            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-64 h-64 flex items-center justify-center">
+                                <i class="fas fa-socks text-6xl text-primary"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-center text-dark">גרביים מכותנה מובילים</h3>
+                        <p class="text-center text-gray-600 mt-2">נוחות, קשיחות, ומסירה טרייה כל שבוע</p>
+                        <div class="mt-6 flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500">מתחיל מ</p>
+                                <p class="text-2xl font-bold text-primary">35 ₪ לחודש</p>
+                            </div>
+                            <button class="bg-primary text-white px-4 py-2 rounded-full text-sm hover:bg-opacity-90">
+                                התאם אישית
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute -top-6 -left-6 w-32 h-32 bg-secondary rounded-full opacity-20 floating"></div>
+                <div class="absolute -bottom-6 -right-6 w-40 h-40 bg-accent rounded-full opacity-20 floating" style="animation-delay: 1s;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 px-4 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-dark mb-4">למה לבחור ב-SOCKO?</h2>
+                <div class="sock-line mx-auto w-24 mb-6"></div>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    אנו דואגים לרגליים שלך כדי שתוכל להתמקד במה שחשוב לך
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="sock-card bg-light rounded-2xl p-8 text-center hover:bg-white">
+                    <div class="w-16 h-16 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-calendar-check text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-3">משלוח שבועי</h3>
+                    <p class="text-gray-600">
+                        גרביים טריים נשלחים כל שבוע ביום שנבחר. לעולם לא ייעלמו שוב!
+                    </p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="sock-card bg-light rounded-2xl p-8 text-center hover:bg-white">
+                    <div class="w-16 h-16 bg-secondary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-tshirt text-secondary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-3">איכות מובילה</h3>
+                    <p class="text-gray-600">
+                    מיוצר מכותנה מובחרת ל נוחות שלך
+                    </p>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="sock-card bg-light rounded-2xl p-8 text-center hover:bg-white">
+                    <div class="w-16 h-16 bg-accent bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-palette text-accent text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-3">מגוון אינסופי</h3>
+                    <p class="text-gray-600">
+                        בחר מ-50+ סגנונות, צבעים וסוגים שמתאימים לאישיות שלך.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-16 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-dark mb-4">איך זה עובד</h2>
+                <div class="sock-line mx-auto w-24 mb-6"></div>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    קבלת גרביים חדשים משלוח פשוט כמו 1-2-3
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Step 1 -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-white">1</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-3">בחר את הסגנון שלך</h3>
+                    <p class="text-gray-600">
+                        בחר מהאוסף שלנו של גרביים מובילים לפי ההעדפות שלך
+                    </p>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-white">2</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-3">קבע לו"ז משלוחים</h3>
+                    <p class="text-gray-600">
+                        בחר באיזה תדירות אתה רוצה לקבל את הגרביים (שבועי, כל שבועיים, או חודשי)
+                    </p>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-accent rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-white">3</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-3">תיהנה מגרביים טריים</h3>
+                    <p class="text-gray-600">
+                        קבל גרביים טריים ונקיים מוסרים家门口 לפי לוח הזמנים שלך
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-16 bg-gradient-to-r from-primary to-secondary rounded-2xl p-8 text-white">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-2/3 mb-6 md:mb-0">
+                        <h3 class="text-2xl font-bold mb-2">הצעה מיוחדת ללקוחות חדשים!</h3>
+                        <p>קבל את השבוע הראשון של גרביים רק ב-15 ₪ (במחיר רגיל 35 ₪)</p>
+                    </div>
+                    <div class="md:w-1/3 flex justify-center">
+                        <button class="bg-white text-primary px-6 py-3 rounded-full font-bold hover:bg-opacity-90 transition">
+                            תבע את ההצעה שלך
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-16 px-4 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-dark mb-4">תמחור פשוט</h2>
+                <div class="sock-line mx-auto w-24 mb-6"></div>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    תוכניות במחירים נוחים שימשיכו את הרגליים שלך שמחות ואת תיבת הגרביים שלך מסודרת
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Basic Plan -->
+                <div class="sock-card bg-light rounded-2xl p-8 border-2 border-gray-200">
+                    <h3 class="text-2xl font-bold text-center text-dark mb-4">בסיסי</h3>
+                    <div class="text-center mb-6">
+                        <span class="text-4xl font-bold text-primary">25 ₪</span>
+                        <span class="text-gray-600">/לחודש</span>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-primary ml-2"></i>
+                            <span>3 זוגות גרביים בחודש</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-primary ml-2"></i>
+                            <span>תערובת כותנה סטנדרטית</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-primary ml-2"></i>
+                            <span>צבעים בסיסיים בלבד</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-times text-gray-400 ml-2"></i>
+                            <span>משלוח חינם</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-gray-200 text-dark py-3 rounded-full font-semibold hover:bg-gray-300 transition">
+                        בחר תוכנית
+                    </button>
+                </div>
+                
+                <!-- Popular Plan -->
+                <div class="sock-card bg-gradient-to-br from-primary to-accent rounded-2xl p-8 text-white relative transform scale-105 z-10">
+                    <div class="absolute top-0 left-0 bg-yellow-400 text-dark px-4 py-1 rounded-br-lg font-bold">
+                        הפופולרי ביותר
+                    </div>
+                    <h3 class="text-2xl font-bold text-center mb-4">פרימיום</h3>
+                    <div class="text-center mb-6">
+                        <span class="text-4xl font-bold">35 ₪</span>
+                        <span class="text-white">/לחודש</span>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-white ml-2"></i>
+                            <span>5 זוגות גרביים בחודש</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-white ml-2"></i>
+                            <span>תערובת כותנה מובילה</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-white ml-2"></i>
+                            <span>מגוון רחב של צבעים ודפוסים</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-white ml-2"></i>
+                            <span>משלוח חינם</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-white text-primary py-3 rounded-full font-semibold hover:bg-opacity-90 transition">
+                        התחל עכשיו
+                    </button>
+                </div>
+                
+                <!-- Pro Plan -->
+                <div class="sock-card bg-light rounded-2xl p-8 border-2 border-gray-200">
+                    <h3 class="text-2xl font-bold text-center text-dark mb-4">פרו</h3>
+                    <div class="text-center mb-6">
+                        <span class="text-4xl font-bold text-primary">55 ₪</span>
+                        <span class="text-gray-600">/לחודש</span>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-primary ml-2"></i>
+                            <span>8 זוגות גרביים בחודש</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-primary ml-2"></i>
+                            <span>חומרים מובילים (במבוק, צמר מרינו)</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-primary ml-2"></i>
+                            <span>אופציות צבע ודפוס ללא הגבלה</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-primary ml-2"></i>
+                            <span>משלוח וחזרות חינם</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-gray-200 text-dark py-3 rounded-full font-semibold hover:bg-gray-300 transition">
+                        בחר תוכנית
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="py-16 px-4 bg-light">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-dark mb-4">מה שלקוחות שלנו אומרים</h2>
+                <div class="sock-line mx-auto w-24 mb-6"></div>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    אל תאמין רק לנו - שמעו מהלקוחות השמחים שלנו
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card bg-white rounded-2xl p-8 shadow-md">
+                    <div class="flex items-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Customer" class="w-12 h-12 rounded-full">
+                        <div class="mr-4">
+                            <h4 class="font-bold text-dark">שרה ג'ונסון</h4>
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "לא חשבתי שארגיש נלהב לגבי גרביים, אבל SOCKO שינה את הכל. האיכות מרשימה ואני אוהבת לקבל סגנונות חדשים כל שבוע!"
+                    </p>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card bg-white rounded-2xl p-8 shadow-md">
+                    <div class="flex items-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/men/54.jpg" alt="Customer" class="w-12 h-12 rounded-full">
+                        <div class="mr-4">
+                            <h4 class="font-bold text-dark">מיכאל צ'ן</h4>
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "כsomeone שזז הרבה, קבלת גרביים טריים מוסרים כל שבוע הפכה למשחק- changer. לא צריך עוד לדאוג על כביסה או זוגות לא תואמים!"
+                    </p>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card bg-white rounded-2xl p-8 shadow-md">
+                    <div class="flex items-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Customer" class="w-12 h-12 rounded-full">
+                        <div class="mr-4">
+                            <h4 class="font-bold text-dark">אמה רודריגז</h4>
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "המגוון מדהים! גיליתי דפוסים כה רבים שמעולם לא הייתי קונה לעצמי. הרגליים שלי מעולם לא היו שמחות יותר!"
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 px-4 bg-gradient-to-r from-primary to-accent">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">מוכנים לשדרג את הגרביים שלכם?</h2>
+            <p class="text-white text-xl mb-8 max-w-2xl mx-auto">
+                הצטרפו לאלפי הלקוחות השמחים שלא ייעלמו להם גרביים טריים ונוחים
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button class="bg-white text-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-opacity-90 transition">
+                    התחל את המינוי שלך
+                </button>
+                <button class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-primary transition">
+                    למד עוד
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-12 px-4">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-xl font-bold mb-4 flex items-center">
+                    SOCKO <i class="fas fa-socks ml-2"></i>
+                </h3>
+                <p class="text-gray-400">
+                    מספק נוחות וסגנון גרביים אחד בכל פעם.
+                </p>
+                <div class="flex space-x-4 mt-6">
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-pinterest"></i></a>
+                </div>
+            </div>
+            
+            <div>
+                <h4 class="font-bold text-lg mb-4">קישורים מהירים</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-white">דף הבית</a></li>
+                    <li><a href="#features" class="text-gray-400 hover:text-white">תכונות</a></li>
+                    <li><a href="#how-it-works" class="text-gray-400 hover:text-white">איך זה עובד</a></li>
+                    <li><a href="#pricing" class="text-gray-400 hover:text-white">תמחור</a></li>
+                    <li><a href="#testimonials" class="text-gray-400 hover:text-white">המלצות</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <h4 class="font-bold text-lg mb-4">תמיכה</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-white">שאלות נפוצות</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">מדיניות משלוחים</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white"> החזרים והחלפות</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">צור קשר</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">מדריך גודל</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <h4 class="font-bold text-lg mb-4">ניוזלטר</h4>
+                <p class="text-gray-400 mb-4">
+                    הירשמו כדי לקבל הצעות מיוחדות ועדכונים
+                </p>
+                <div class="flex">
+                    <input type="email" placeholder="האימייל שלך" class="px-4 py-2 rounded-r-lg w-full text-dark">
+                    <button class="bg-primary px-4 py-2 rounded-l-lg">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="max-w-6xl mx-auto mt-12 pt-8 border-t border-gray-800 text-center text-gray-500">
+            <p>&copy; 2023 SOCKO. כל הזכויות שמורות.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+                
+                // Close mobile menu if open
+                document.getElementById('mobile-menu').classList.add('hidden');
+            });
+        });
+        
+        // Animation on scroll
+        window.addEventListener('scroll', function() {
+            const elements = document.querySelectorAll('.sock-card');
+            
+            elements.forEach(element => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.3;
+                
+                if (elementPosition < screenPosition) {
+                    element.style.opacity = 1;
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        });
+        
+        // Initialize cards with opacity 0 and translateY(20px)
+        document.querySelectorAll('.sock-card').forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        });
+    </script>
+</body>
+</html>
